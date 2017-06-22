@@ -1,5 +1,5 @@
 var width = 800,
-    height = 600;
+    height = 650;
 
 var pm10_svg = d3.select("#pm10")
     .append("svg")
@@ -33,6 +33,95 @@ var pm25dict = {};
 var pm10hourlydict = {};
 var pm25hourlydict = {};
 
+var levels_10 = pm10_svg.append("g")
+    .attr("id", "levels10")
+    .attr("transform", "translate(600, 30)");
+
+var levels_25 = pm25_svg.append("g")
+    .attr("id", "levels25")
+    .attr("transform", "translate(600, 30");
+
+var level_data_10 = [{"level":"좋음", "color":"rgb(70, 90, 235)", "range":[0, 30]},
+    {"level":"보통", "color":"rgb(42, 197, 124)", "range":[31, 80]},
+    {"level":"나쁨", "color":"rgb(220, 228, 66)", "range": [81, 150]},
+    {"level":"매우나쁨", "color":"rgb(216, 57, 55)", "range":[151, -1]}];
+
+var level_data_25 = [{"level":"좋음", "color":"rgb(70, 90, 235)", "range":[0, 15]},
+    {"level":"보통", "color":"rgb(42, 197, 124)", "range":[16, 50]},
+    {"level":"나쁨", "color":"rgb(220, 228, 66)", "range":[51, 100]},
+    {"level":"매우나쁨", "color":"rgb(216, 57, 55)", "range":[101, -1]}];
+
+levels_10.selectAll("rect")
+    .data(level_data_10)
+    .enter()
+    .append("rect")
+    .attr("x", function(d, i) { return i * 40 - 600})
+    .attr("y", 610)
+    .attr("transform", function(d, i) {
+        return "translate("+i*14 + "0)";
+    })
+    .attr("width", 40)
+    .attr("height", 20)
+    .style("fill", function(d) {
+        return d.color;
+    });
+
+levels_10.selectAll("text")
+    .data(level_data_10)
+    .enter()
+    .append("text")
+    .attr("x", function(d, i) { return i * 40 - 550})
+    .attr("y", 615)
+    .attr("transform", function(d, i) {
+        return "translate("+i*14 + "0)";
+    })
+    .attr("dy", ".35em")
+    .attr("font-size", "12px")
+    .text(function(d) {
+        var str;
+        if (d.range[1]===-1)
+            str = d.level + " : " + d.range[0] + " 이상 ";
+        else
+            str = d.level + " : " + d.range[0] + " 이상 " + d.range[1] + " 이하 ";
+        return str;
+    });
+
+levels_25.selectAll("rect")
+    .data(level_data_25)
+    .enter()
+    .append("rect")
+    .attr("x", function(d, i) { return i * 40})
+    .attr("y", 640)
+    .attr("transform", function(d, i) {
+        return "translate("+i*14 + "0)";
+    })
+    .attr("width", 40)
+    .attr("height", 20)
+    .style("fill", function(d) {
+        return d.color;
+    });
+
+levels_25.selectAll("text")
+    .data(level_data_25)
+    .enter()
+    .append("text")
+    .attr("x", function(d, i) { return i * 40 + 50})
+    .attr("y", 645)
+    .attr("transform", function(d, i) {
+        return "translate("+i*14 + "0)";
+    })
+    .attr("dy", ".35em")
+    .attr("font-size", "12px")
+    .text(function(d) {
+        var str;
+        if (d.range[1]===-1)
+            str = d.level + " : " + d.range[0] + " 이상 ";
+        else
+            str = d.level + " : " + d.range[0] + " 이상 " + d.range[1] + " 이하 ";
+        return str;
+    });
+
+
 var features;
 
 readCSV();
@@ -41,7 +130,7 @@ drawMap(pm25_map, pm25dict);
 
 function readCSV() {
     d3.csv("./csv/seoul_daily.csv", function (error, csv_data) {
-    // d3.csv("./data/seoul_daily.csv", function(error, csv_data) {
+        // d3.csv("./data/seoul_daily.csv", function(error, csv_data) {
 
         console.log(pm10dict);
 
@@ -65,33 +154,33 @@ function readCSV() {
     });
 
     /*
-    d3.csv("./csv/2016_hourly.csv", function (error, csv_data) {
-        csv_data.forEach(function (d) {
-            pm10hourlydict[d.날짜] = {};
-        });
+     d3.csv("./csv/2016_hourly.csv", function (error, csv_data) {
+     csv_data.forEach(function (d) {
+     pm10hourlydict[d.날짜] = {};
+     });
 
-        csv_data.forEach(function(d) {
-            pm10hourlydict[d.날짜][d.측정소] = {};
-        });
+     csv_data.forEach(function(d) {
+     pm10hourlydict[d.날짜][d.측정소] = {};
+     });
 
 
-        csv_data.forEach(function(d) {
-            pm10hourlydict[d.날짜][d.측정소][d.시간] = +d.PM10;
-        });
+     csv_data.forEach(function(d) {
+     pm10hourlydict[d.날짜][d.측정소][d.시간] = +d.PM10;
+     });
 
-        csv_data.forEach(function(d) {
-            pm25hourlydict[d.날짜] = {};
-        });
+     csv_data.forEach(function(d) {
+     pm25hourlydict[d.날짜] = {};
+     });
 
-        csv_data.forEach(function(d) {
-            pm25hourlydict[d.날짜][d.측정소]= {};
-        });
+     csv_data.forEach(function(d) {
+     pm25hourlydict[d.날짜][d.측정소]= {};
+     });
 
-        csv_data.forEach(function(d) {
-            pm25hourlydict[d.날짜][d.측정소][d.시간] = +d.PM25;
-        });
-    });
-    */
+     csv_data.forEach(function(d) {
+     pm25hourlydict[d.날짜][d.측정소][d.시간] = +d.PM25;
+     });
+     });
+     */
 }
 
 
